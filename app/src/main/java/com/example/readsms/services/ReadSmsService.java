@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat;
 import com.example.readsms.MainActivity;
 import com.example.readsms.R;
 
-public class ReadSMSForgroundService extends JobService {
+public class ReadSmsService extends JobService {
 
 
     BroadcastReceiver callExplicitReceiver;

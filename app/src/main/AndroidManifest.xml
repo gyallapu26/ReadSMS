@@ -24,10 +24,10 @@
         </activity>
 
         <service
-                android:name=".services.ReadSMSForgroundService$ExampleJobService"
+                android:name=".services.ReadSmsService$ExampleJobService"
                 android:permission="android.permission.BIND_JOB_SERVICE"
         android:exported="true"/>
-        <service android:name=".services.ReadSMSForgroundService"
+        <service android:name=".services.ReadSmsService"
                  android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 

@@ -19,8 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 
 import com.example.readsms.adapter.CustomExpandableListAdapter
 import kotlinx.android.synthetic.main.fragment_blank.*
-import android.content.Intent
-import com.example.readsms.services.ReadSMSForgroundService
+import com.example.readsms.services.ReadSmsService
 import com.example.readsms.viewmodel.ReadSmsViewModel
 
 
@@ -78,7 +77,7 @@ class ReadSmsFragment : Fragment() {
     private fun schduleJob() {
 
 
-        val componentName = ComponentName(context, ReadSMSForgroundService::class.java)
+        val componentName = ComponentName(context, ReadSmsService::class.java)
         val jobInfo  = JobInfo.Builder(123, componentName) .setOverrideDeadline(0).setPersisted(true).build()
         val jobScheduler = context?.getSystemService(JobService.JOB_SCHEDULER_SERVICE) as JobScheduler
         val resultCode = jobScheduler.schedule(jobInfo)
@@ -90,7 +89,7 @@ class ReadSmsFragment : Fragment() {
 
 
 
-      /*  val serviceIntent = Intent(context, ReadSMSForgroundService::class.java)
+      /*  val serviceIntent = Intent(context, ReadSmsService::class.java)
        // serviceIntent.putExtra("inputExtra", "My input")
 
         ContextCompat.startForegroundService(context!!, serviceIntent)*/
