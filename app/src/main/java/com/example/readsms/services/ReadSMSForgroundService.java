@@ -12,21 +12,32 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.example.readsms.MainActivity;
 import com.example.readsms.R;
-import static com.example.readsms.application.App.CHANNEL_ID;
 
-public class ReadSMSForgroundService extends Service {
+public class ReadSMSForgroundService extends JobService {
 
 
     BroadcastReceiver callExplicitReceiver;
 
-    @Override
-    public void onCreate() {
-        Log.d("sos", "oncreate called");
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("sos", "ondestroy called");
+        unregisterReceiver(callExplicitReceiver);
+    }
+
+    @Override
+    public boolean onStartJob(JobParameters jobParameters) {
+        Log.d("sos", "onStartJob called");
+        doBackGroundWork(jobParameters);
+        return true;
+    }
+
+    private void doBackGroundWork(final JobParameters jobParameters) {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.setPriority(2147483647);
         intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
@@ -52,6 +63,7 @@ public class ReadSMSForgroundService extends Service {
 
                         Log.i("sos", strMessage);
                         showNotification( context, strMsgSrc, strMsgBody) ;
+                        jobFinished(jobParameters, true);
                     }
 
                 }
@@ -60,7 +72,7 @@ public class ReadSMSForgroundService extends Service {
             private void showNotification(Context ctx, String strMsgSrc, String strMsgBody) {
 
 
-                 NotificationManager mNotificationManager;
+                NotificationManager mNotificationManager;
 
                 NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(ctx.getApplicationContext(), "notify_001");
@@ -78,6 +90,7 @@ public class ReadSMSForgroundService extends Service {
                 mBuilder.setContentText(strMsgBody);
                 mBuilder.setPriority(Notification.PRIORITY_MAX);
                 mBuilder.setStyle(bigText);
+                mBuilder.setAutoCancel(true);
 
                 mNotificationManager =
                         (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -99,52 +112,22 @@ public class ReadSMSForgroundService extends Service {
         super.onCreate();
     }
 
-
-
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.d("sos", "onStartCommand called");
-
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Read sms service")
-                .setContentText("running.......")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        startForeground(1, notification);
-
-        //do heavy work on a background thread
-        //stopSelf();
-
-        return START_NOT_STICKY;
+    public boolean onStopJob(JobParameters jobParameters) {
+        Log.d("sos", "onstop called");
+        return true;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("sos", "ondestroy called");
-        unregisterReceiver(callExplicitReceiver);
-    }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    public static class ExampleJobService extends JobService {
+   /* public static class ExampleJobService extends JobService {
         private static final String TAG = "ExampleJobService";
         private boolean jobCancelled = false;
+
+
+        @Override
+        public void onCreate() {
+            super.onCreate();
+        }
 
         @Override
         public boolean onStartJob(JobParameters params) {
@@ -185,5 +168,5 @@ public class ReadSMSForgroundService extends Service {
             jobCancelled = true;
             return true;
         }
-    }
+    } */
 }

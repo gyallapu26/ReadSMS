@@ -1,6 +1,10 @@
 package com.example.readsms
 
 
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.app.job.JobService
+import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -74,38 +78,22 @@ class ReadSmsFragment : Fragment() {
     private fun schduleJob() {
 
 
-    /*    val component = ComponentName(context, ExampleJobService::class.java)
-        val uri = Uri.parse("content://sms")
-
-        var triggerContentUri: JobInfo.TriggerContentUri? = null
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            triggerContentUri = JobInfo.TriggerContentUri(
-                uri,
-                JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS
-            )
-        }
-
-        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobInfo.Builder(1, component).addTriggerContentUri(triggerContentUri!!)
-        } else {
-            TODO("VERSION.SDK_INT < N")
-        }
-
-        val jobScheduler = context?.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-
-        val resultCode  = jobScheduler.schedule(builder.build())
+        val componentName = ComponentName(context, ReadSMSForgroundService::class.java)
+        val jobInfo  = JobInfo.Builder(123, componentName) .setOverrideDeadline(0).setPersisted(true).build()
+        val jobScheduler = context?.getSystemService(JobService.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val resultCode = jobScheduler.schedule(jobInfo)
         if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.d("sos", "Job scheduled")
+            Log.d("sos", "Job scheduled");
         } else {
-            Log.d("sos", "Job scheduling failed")
-        }  */
+            Log.d("sos", "Job scheduling failed");
+        }
 
 
-        val serviceIntent = Intent(context, ReadSMSForgroundService::class.java)
+
+      /*  val serviceIntent = Intent(context, ReadSMSForgroundService::class.java)
        // serviceIntent.putExtra("inputExtra", "My input")
 
-        ContextCompat.startForegroundService(context!!, serviceIntent)
+        ContextCompat.startForegroundService(context!!, serviceIntent)*/
 
     }
 
